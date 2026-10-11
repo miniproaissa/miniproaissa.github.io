@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Web Card</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%230B3C5D%27/%3E%3Crect x=%2722%27 y=%2740%27 width=%2756%27 height=%2730%27 rx=%276%27 fill=%27%23F26B4E%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --navy:#0B3C5D; --blue:#1F6FB2; --coral:#F26B4E; --coral-soft:#FDEDE8;
+    --bg:#FFFFFF; --soft:#F4F7FA; --line:#E3E8EE; --ink:#1B2430; --muted:#5B6773;
+    --radius:16px; --shadow:0 8px 28px rgba(11,60,93,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  button{font:inherit;cursor:pointer}
+  [hidden]{display:none !important}
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px}
+
+  /* 잠금 화면 */
+  #lock{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0B3C5D 0%,#1F6FB2 70%,#F26B4E 140%)}
+  .lock-box{background:#fff;border-radius:20px;padding:36px 28px;width:min(92vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+  .lock-box h1{margin:8px 0 4px;font-size:22px;color:var(--navy)}
+  .lock-box p{margin:0 0 20px;color:var(--muted);font-size:14px}
+  .lock-box input{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:12px;font-size:20px;text-align:center;letter-spacing:.3em}
+  .lock-box input:focus{outline:none;border-color:var(--blue)}
+  .lock-box label{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin:12px 0;white-space:nowrap}
+  .lock-msg{min-height:20px;font-size:13px;color:var(--coral);margin-top:8px}
+
+  /* 상단 메뉴 */
+  nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:8px;height:56px}
+  .brand{font-weight:800;color:var(--navy);margin-right:auto;white-space:nowrap}
+  .menu{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .menu::-webkit-scrollbar{display:none}
+  .menu a{padding:8px 10px;border-radius:8px;font-size:14px;color:var(--muted);white-space:nowrap}
+  .menu a:hover{background:var(--soft);color:var(--navy)}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;color:var(--navy);white-space:nowrap}
+  .pill:hover{border-color:var(--blue)}
+
+  /* 명함 카드 */
+  #card{padding:28px 0 8px}
+  .card{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;
+        display:grid;grid-template-columns:2fr 3fr;aspect-ratio:9/5}
+  .card::before{content:"";position:absolute;inset:0 auto 0 0;width:8px;background:linear-gradient(var(--navy),var(--coral))}
+  .card-left{display:flex;align-items:center;justify-content:center;background:var(--soft);padding:24px}
+  .card-left img{width:min(100%,220px);aspect-ratio:1;object-fit:cover;border-radius:50%;border:6px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+  .card-right{padding:28px 28px 24px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0}
+  .name-ko{font-size:34px;font-weight:800;color:var(--navy);line-height:1.15;margin:0}
+  .name-en{font-size:15px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .aff{font-size:14px;color:var(--ink);margin-top:4px}
+  .tagline{font-size:17px;font-weight:600;color:var(--coral);margin-top:6px;min-height:1.6em}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12.5px;color:var(--navy)}
+  .card-foot{margin-top:28px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:10px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600;border:1px solid var(--navy);color:var(--navy);background:#fff}
+  .btn.primary{background:var(--navy);color:#fff}
+  .btn:hover{filter:brightness(1.08)}
+  .btn svg{width:16px;height:16px}
+  .qr{width:76px;height:76px;border:1px solid var(--line);border-radius:8px;padding:4px;background:#fff;flex:none}
+  .img-why{font-size:12.5px;color:var(--muted);margin:10px 2px 0}
+
+  /* 누구신가요 */
+  #who{padding:18px 0 6px}
+  .who-title{font-size:14px;color:var(--muted);margin:0 0 8px}
+  .faces{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .face{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 10px;font-weight:600;color:var(--navy);font-size:14px}
+  .face.on{border-color:var(--coral);background:var(--coral-soft)}
+  .hl{margin:12px 0 0;padding:12px 14px;background:var(--soft);border-radius:12px;font-size:13.5px;color:var(--ink)}
+  .hl b{color:var(--navy)}
+  .hl ul{margin:6px 0 0;padding-left:18px}
+
+  /* 섹션 공통 */
+  section.block{padding:34px 0 6px;scroll-margin-top:64px}
+  .h{display:flex;align-items:baseline;gap:10px;margin:0 0 14px}
+  .h h2{margin:0;font-size:22px;color:var(--navy)}
+  .h span{font-size:13px;color:var(--muted)}
+  .loading{color:var(--muted);font-size:14px;padding:10px 0}
+
+  /* 이야기 */
+  .stories{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .story{border:1px solid var(--line);border-radius:var(--radius);padding:18px;background:#fff;display:flex;flex-direction:column;gap:8px}
+  .story .k{font-size:12px;font-weight:700;color:var(--coral);letter-spacing:.04em}
+  .story h3{margin:0;font-size:17px;color:var(--navy);line-height:1.35}
+  .story dl{margin:0;font-size:13.5px}
+  .story dt{color:var(--muted);font-size:12px;margin-top:8px}
+  .story dd{margin:0}
+
+  /* 숫자 */
+  .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .num{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff}
+  .num .v{font-size:26px;font-weight:800;color:var(--navy);line-height:1.1}
+  .num .w{font-size:13.5px;color:var(--ink);margin-top:6px;font-weight:600}
+  .num .b{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* 이력 */
+  .tl{list-style:none;margin:0;padding:0;border-left:2px solid var(--line);margin-left:8px}
+  .tl li{position:relative;padding:0 0 16px 22px}
+  .tl li::before{content:"";position:absolute;left:-7px;top:7px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--blue)}
+  .tl li.cert::before{border-color:var(--coral)}
+  .tl .d{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tl .n{font-weight:700;color:var(--ink)}
+  .tl .r{font-size:13.5px;color:var(--muted)}
+  .badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--navy);border:1px solid var(--line);margin-left:6px;vertical-align:middle}
+  .more{margin-top:4px}
+
+  /* 스킬 */
+  .skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .sk{border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .sk h4{margin:0 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+  .sk .row{display:grid;grid-template-columns:1fr 90px 28px;align-items:center;gap:10px;font-size:14px;padding:4px 0}
+  .bar{height:8px;background:var(--soft);border-radius:999px;overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:999px}
+  .lv{font-size:12px;color:var(--muted);text-align:right}
+
+  /* 목표 */
+  .goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .goal{border-left:4px solid var(--coral);background:var(--soft);border-radius:0 12px 12px 0;padding:12px 14px}
+  .goal b{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+
+  /* 물어보기 · 연락 */
+  .ask-box,.contact-box{border:1px solid var(--line);border-radius:var(--radius);padding:18px;background:#fff}
+  .faq{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .faq button{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--navy)}
+  .inline{display:flex;gap:8px}
+  .inline input,.contact-box input,.contact-box textarea{flex:1;width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px}
+  .inline input:focus,.contact-box input:focus,.contact-box textarea:focus{outline:none;border-color:var(--blue)}
+  .answer{margin-top:12px;padding:14px;border-radius:12px;background:var(--soft);font-size:15px;min-height:52px;white-space:pre-wrap}
+  .answer.err{color:var(--coral)}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .contact-box .stack{display:flex;flex-direction:column;gap:8px}
+  .mailrow{display:flex;align-items:center;gap:10px;font-size:15px;margin-bottom:10px}
+  .mailrow svg{width:20px;height:20px;color:var(--navy)}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px}
+  footer{padding:40px 0 60px;color:var(--muted);font-size:12.5px;text-align:center}
+
+  @media (max-width:760px){
+    .card{grid-template-columns:1fr;aspect-ratio:auto}
+    .card-left{padding:22px 16px 8px;background:#fff}
+    .card-left img{width:140px}
+    .card-right{padding:8px 20px 20px;text-align:center;align-items:center}
+    .chips{justify-content:center}
+    .card-foot{flex-direction:column;align-items:center}
+    .name-ko{font-size:28px}
+    .faces{grid-template-columns:1fr}
+    .stories{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    .sk .row{grid-template-columns:1fr 70px 28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ───────── 잠금 화면 ───────── -->
+<div id="lock">
+  <form class="lock-box" id="lockForm" autocomplete="off">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0B3C5D" stroke-width="1.6"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>
+    <h1 data-i18n="lock_title">웹명함</h1>
+    <p data-i18n="lock_desc">명함과 함께 받은 비밀번호를 입력해 주세요.</p>
+    <input id="pw" type="password" inputmode="numeric" placeholder="••••" aria-label="비밀번호" required>
+    <label><input type="checkbox" id="remember" checked> <span data-i18n="lock_remember">이 기기에서 기억하기</span></label>
+    <button class="btn primary" type="submit" style="width:100%;justify-content:center" data-i18n="lock_enter">열기</button>
+    <div class="lock-msg" id="lockMsg"></div>
+  </form>
+</div>
+
+<!-- ───────── 본문 ───────── -->
+<div id="app" hidden>
+  <nav>
+    <div class="wrap">
+      <span class="brand" id="brand">Web Card</span>
+      <div class="menu" id="menu"></div>
+      <button class="pill" id="langBtn" type="button">EN</button>
+      <button class="pill" id="lockBtn" type="button" title="잠그기" data-i18n="lock_btn">잠금</button>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="card">
+      <div class="card">
+        <div class="card-left"><img src="profile.jpg" alt="profile" id="profileImg"></div>
+        <div class="card-right">
+          <h1 class="name-ko" id="nameKo"></h1>
+          <div class="name-en" id="nameEn"></div>
+          <div class="aff" id="aff"></div>
+          <div class="tagline" id="tagline"></div>
+          <div class="chips" id="chips"></div>
+          <div class="card-foot">
+            <div class="btns">
+              <button class="btn primary" id="vcardBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+                <span data-i18n="save_contact">연락처 저장</span>
+              </button>
+              <a class="btn" id="mailBtn" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                <span data-i18n="email">이메일</span>
+              </a>
+            </div>
+            <img class="qr" src="qr.png" alt="QR">
+          </div>
+        </div>
+      </div>
+      <p class="img-why" id="imgWhy"></p>
+    </section>
+
+    <section id="who">
+      <p class="who-title" data-i18n="who_title">누구신가요? 보는 분에 맞춰 순서와 강조가 바뀝니다.</p>
+      <div class="faces" id="faces"></div>
+      <div class="hl" id="hl" hidden></div>
+    </section>
+
+    <div id="sections"><p class="loading" data-i18n="loading">이력을 불러오는 중입니다…</p></div>
+  </main>
+
+  <footer><span id="footText"></span></footer>
+</div>
+
+<script>
+/* ──────────────────────────────────────────────────────────────
+   설정: Apps Script 웹앱 배포 후 받은 URL 하나만 여기에 붙여넣습니다.
+   이 파일에는 개인 정보가 들어 있지 않습니다. 모든 내용은 비밀번호가 맞을 때만
+   Apps Script(Google Sheet)에서 내려옵니다.
+   ────────────────────────────────────────────────────────────── */
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+
+/* 한/영 UI 라벨 (내용 데이터는 시트에 있는 언어 그대로 표시됩니다) */
+const I18N = {
+  ko: { lock_title:'웹명함', lock_desc:'명함과 함께 받은 비밀번호를 입력해 주세요.', lock_remember:'이 기기에서 기억하기', lock_enter:'열기', lock_btn:'잠금',
+        save_contact:'연락처 저장', email:'이메일', who_title:'누구신가요? 보는 분에 맞춰 순서와 강조가 바뀝니다.', loading:'이력을 불러오는 중입니다…',
+        first_look:'먼저 보세요', sec:{stories:'이야기 세 개', numbers:'숫자로 보는 나', timeline:'이력', skills:'할 수 있는 것', goals:'진행 중', ask:'나에게 물어보기', contact:'연락'},
+        sub:{stories:'이력 나열 대신, 이 셋이 저를 보여줍니다', numbers:'형용사 대신 숫자로', timeline:'최근 순 · Google Sheet에서 자동 갱신', skills:'상=가르칠 수 있음 · 중=혼자 할 수 있음 · 하=배우는 중', goals:'1년 뒤의 나', ask:'프로필 범위 안에서만 AI가 답합니다', contact:'메시지를 남겨 주세요'},
+        st:{proud:'가장 자랑스러운 경험', hard:'힘들었지만 배운 경험', problem:'풀고 싶은 문제'},
+        f:{when:'언제 · 어디', role:'내 역할', result:'결과', learned:'배운 점', problem:'문제', why:'왜', how:'어떻게'},
+        lv:{'상':'상','중':'중','하':'하'}, more:'전체 보기', less:'접기', ask_ph:'예: 어떤 자격이 있나요?', ask_btn:'질문', asking:'답을 찾는 중…',
+        g:{one_year:'1년 안에', before_grad:'졸업 전까지', want_to_try:'더 해보고 싶은 일', career:'진로'},
+        name_ph:'이름(선택)', msg_ph:'메시지', send:'보내기', sent:'전송되었습니다. 감사합니다!', send_fail:'전송에 실패했습니다.', gb_title:'방명록', mail_title:'공개 연락처',
+        foot:'이 명함은 Google Sheet 한 줄을 고치면 바뀝니다 · 스포츠AI메이커스 과제', vcard_note:'연락처 저장 버튼은 이메일·소속·이 주소를 담은 vCard 파일을 내려받습니다.' },
+  en: { lock_title:'Web Card', lock_desc:'Enter the password you received with the card.', lock_remember:'Remember on this device', lock_enter:'Open', lock_btn:'Lock',
+        save_contact:'Save contact', email:'Email', who_title:'Who are you? Order and emphasis adapt to the reader.', loading:'Loading profile…',
+        first_look:'Start here', sec:{stories:'Three stories', numbers:'In numbers', timeline:'Timeline', skills:'Skills', goals:'In progress', ask:'Ask me', contact:'Contact'},
+        sub:{stories:'Not a list of jobs — three stories that show who I am', numbers:'Facts, not adjectives', timeline:'Newest first · synced from Google Sheet', skills:'High = can teach · Mid = can do alone · Low = learning', goals:'One year from now', ask:'AI answers only within my profile', contact:'Leave a message'},
+        st:{proud:'Proudest moment', hard:'Hardest lesson', problem:'A problem I want to solve'},
+        f:{when:'When · where', role:'My role', result:'Result', learned:'What I learned', problem:'Problem', why:'Why', how:'How'},
+        lv:{'상':'High','중':'Mid','하':'Low'}, more:'Show all', less:'Show less', ask_ph:'e.g. What certifications do you have?', ask_btn:'Ask', asking:'Thinking…',
+        g:{one_year:'Within a year', before_grad:'Before graduation', want_to_try:'Want to try', career:'Career'},
+        name_ph:'Name (optional)', msg_ph:'Message', send:'Send', sent:'Sent. Thank you!', send_fail:'Failed to send.', gb_title:'Guestbook', mail_title:'Public contact',
+        foot:'Edit one row in Google Sheet and this card updates · Sports AI Makers assignment', vcard_note:'“Save contact” downloads a vCard with email, affiliation and this URL.' }
+};
+const SEC_IDS = { '이야기 3개':'stories', '숫자로 보는 나':'numbers', '이력 타임라인':'timeline', '스킬':'skills', '진행 중(목표)':'goals', '나에게 물어보기':'ask', '연락':'contact' };
+const DEFAULT_ORDER = ['stories','numbers','timeline','skills','goals','ask','contact'];
+const LEVEL_W = { '상':100, '중':66, '하':33 };
+
+let lang = localStorage.getItem('wc_lang') || 'ko';
+let DATA = null, faceIdx = Number(localStorage.getItem('wc_face') ?? -1), tlExpanded = false;
+const $ = (s) => document.querySelector(s);
+const t = () => I18N[lang];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pw = () => sessionStorage.getItem('wc_pw') || localStorage.getItem('wc_pw') || '';
+
+/* ───── API ───── */
+async function apiGet(params) {
+  if (API_URL.startsWith('PASTE_')) throw new Error(lang === 'ko' ? '백엔드 주소(API_URL)가 아직 설정되지 않았습니다.' : 'API_URL is not configured yet.');
+  const u = new URL(API_URL); Object.entries(params).forEach(([k, v]) => u.searchParams.set(k, v));
+  const r = await fetch(u.toString(), { method: 'GET', redirect: 'follow' });
+  return r.json();
+}
+async function apiPost(body) {
+  const r = await fetch(API_URL, { method: 'POST', redirect: 'follow', body: JSON.stringify(body) }); // text/plain → 사전 요청(preflight) 없음
+  return r.json();
+}
+
+/* ───── 잠금 ───── */
+$('#lockForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const v = $('#pw').value.trim(); const msg = $('#lockMsg'); msg.textContent = '…';
+  try {
+    const res = await apiGet({ action: 'auth', pw: v });
+    if (!res.ok) { msg.textContent = res.error || (lang === 'ko' ? '비밀번호가 맞지 않습니다.' : 'Wrong password.'); return; }
+    ($('#remember').checked ? localStorage : sessionStorage).setItem('wc_pw', v);
+    msg.textContent = ''; openApp();
+  } catch (err) { msg.textContent = err.message; }
+});
+$('#lockBtn').addEventListener('click', () => { localStorage.removeItem('wc_pw'); sessionStorage.removeItem('wc_pw'); location.reload(); });
+
+async function openApp() {
+  $('#lock').hidden = true; $('#app').hidden = false; applyLabels();
+  try {
+    const res = await apiGet({ action: 'data', pw: pw() });
+    if (!res.ok) { localStorage.removeItem('wc_pw'); sessionStorage.removeItem('wc_pw'); $('#lock').hidden = false; $('#app').hidden = true; $('#lockMsg').textContent = res.error || ''; return; }
+    DATA = res.data; renderAll();
+  } catch (err) { $('#sections').innerHTML = `<p class="loading">${esc(err.message)}</p>`; }
+}
+
+/* ───── 렌더 ───── */
+function applyLabels() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.dataset.i18n; if (t()[k]) el.textContent = t()[k]; });
+  $('#langBtn').textContent = lang === 'ko' ? 'EN' : '한';
+  document.documentElement.lang = lang;
+  $('#footText').textContent = t().foot;
+}
+function currentFace() { return DATA && DATA.faces[faceIdx] ? DATA.faces[faceIdx] : null; }
+function orderIds() {
+  const f = currentFace(); if (!f) return DEFAULT_ORDER;
+  const ids = f.order.map(o => SEC_IDS[o]).filter(Boolean);
+  DEFAULT_ORDER.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+  return ids;
+}
+function renderAll() {
+  const b = DATA.basic, f = currentFace();
+  $('#brand').textContent = lang === 'ko' ? b.name_ko : b.name_en;
+  $('#nameKo').textContent = lang === 'ko' ? b.name_ko : b.name_en;
+  $('#nameEn').textContent = lang === 'ko' ? b.name_en : b.name_ko;
+  $('#aff').textContent = (lang === 'en' && b.affiliation_en) ? b.affiliation_en : b.affiliation;
+  $('#tagline').textContent = f ? (lang === 'ko' ? f.tagline_ko : f.tagline_en) : (b.taglines[0] || '');
+  const kws = (lang === 'en' && b.keywords_en.length) ? b.keywords_en : b.keywords;
+  $('#chips').innerHTML = kws.map(k => `<span class="chip">${esc(k)}</span>`).join('');
+  $('#mailBtn').href = 'mailto:' + b.email;
+  $('#imgWhy').textContent = b.image_reason ? (lang === 'ko' ? '프로필 이미지를 고른 이유 · ' : 'Why this image · ') + b.image_reason : '';
+  $('#profileImg').alt = b.name_ko;
+
+  // 독자 버튼
+  $('#faces').innerHTML = DATA.faces.map((x, i) => `<button type="button" class="face ${i === faceIdx ? 'on' : ''}" data-i="${i}">${esc(lang === 'ko' ? x.audience : (x.audience_en || x.audience))}</button>`).join('');
+  $('#faces').querySelectorAll('.face').forEach(btn => btn.addEventListener('click', () => { faceIdx = Number(btn.dataset.i); localStorage.setItem('wc_face', faceIdx); renderAll(); }));
+  const hl = $('#hl');
+  if (f && f.highlights.length) { hl.hidden = false; hl.innerHTML = `<b>${t().first_look}</b><ul>${f.highlights.map(h => `<li>${esc(h)}</li>`).join('')}</ul>`; } else hl.hidden = true;
+
+  // 메뉴 + 섹션
+  const ids = orderIds();
+  $('#menu').innerHTML = ids.map(id => `<a href="#${id}">${t().sec[id]}</a>`).join('');
+  const R = { stories: renderStories, numbers: renderNumbers, timeline: renderTimeline, skills: renderSkills, goals: renderGoals, ask: renderAsk, contact: renderContact };
+  $('#sections').innerHTML = ids.map(id => R[id]()).filter(Boolean).join('');
+  bindDynamic();
+}
+const block = (id, inner) => inner ? `<section class="block" id="${id}"><div class="h"><h2>${t().sec[id]}</h2><span>${t().sub[id]}</span></div>${inner}</section>` : '';
+
+function renderStories() {
+  const S = DATA.stories; if (!S.length) return '';
+  const F = t().f, keyLabel = { story_proud: t().st.proud, story_hard: t().st.hard, story_problem: t().st.problem };
+  const card = (s) => {
+    const title = (lang === 'en' && s.title_en) ? s.title_en : s.title;
+    const rows = s.key === 'story_problem'
+      ? [[F.problem, s.problem], [F.why, s.why], [F.how, s.how]]
+      : [[F.when, s.when_where], [F.role, s.role], [F.result, s.result], [F.learned, s.learned]];
+    return `<article class="story"><div class="k">${esc(keyLabel[s.key] || '')}</div><h3>${esc(title)}</h3><dl>${rows.filter(r => r[1]).map(r => `<dt>${r[0]}</dt><dd>${esc(r[1])}</dd>`).join('')}</dl></article>`;
+  };
+  return block('stories', `<div class="stories">${S.map(card).join('')}</div>`);
+}
+function renderNumbers() {
+  const N = DATA.numbers; if (!N.length) return '';
+  return block('numbers', `<div class="nums">${N.map(n => `<div class="num"><div class="v">${esc(n.value)}</div><div class="w">${esc(n.what)}</div><div class="b">${esc(n.basis)}</div></div>`).join('')}</div>`);
+}
+function renderTimeline() {
+  const T = DATA.timeline; if (!T.length) return '';
+  const limit = 8, shown = tlExpanded ? T : T.slice(0, limit);
+  const li = (x) => `<li class="${/자격/.test(x.type) ? 'cert' : ''}"><div class="d">${esc(x.start || '—')}${x.end ? ' ~ ' + esc(x.end) : ''}</div><div class="n">${esc(x.name)}<span class="badge">${esc(x.type)}</span></div>${x.role ? `<div class="r">${esc(x.role)}</div>` : ''}</li>`;
+  const more = T.length > limit ? `<button class="btn more" type="button" id="tlMore">${tlExpanded ? t().less : t().more + ` (${T.length})`}</button>` : '';
+  return block('timeline', `<ul class="tl">${shown.map(li).join('')}</ul>${more}`);
+}
+function renderSkills() {
+  const S = DATA.skills; if (!S.length) return '';
+  const groups = {}; S.forEach(s => { (groups[s.area] = groups[s.area] || []).push(s); });
+  const g = (area, items) => `<div class="sk"><h4>${esc(area)}</h4>${items.map(s => `<div class="row"><span>${esc(s.item)}</span>${s.level ? `<div class="bar"><i style="width:${LEVEL_W[s.level] || 0}%"></i></div><span class="lv">${esc(t().lv[s.level] || s.level)}</span>` : '<span></span><span></span>'}</div>`).join('')}</div>`;
+  return block('skills', `<div class="skills">${Object.entries(groups).map(([a, i]) => g(a, i)).join('')}</div>`);
+}
+function renderGoals() {
+  const G = DATA.goals; const keys = ['one_year', 'before_grad', 'want_to_try', 'career'].filter(k => G[k]); if (!keys.length) return '';
+  return block('goals', `<div class="goals">${keys.map(k => `<div class="goal"><b>${t().g[k]}</b>${esc(G[k])}</div>`).join('')}</div>`);
+}
+function renderAsk() {
+  const faq = DATA.faq.map((f, i) => `<button type="button" data-q="${i}">${esc(f.q)}</button>`).join('');
+  return block('ask', `<div class="ask-box"><div class="faq">${faq}</div><form class="inline" id="askForm"><input id="askInput" placeholder="${esc(t().ask_ph)}" maxlength="300" required><button class="btn primary" type="submit">${t().ask_btn}</button></form><div class="answer" id="answer" hidden></div></div>`);
+}
+function renderContact() {
+  return block('contact', `<div class="contact-grid">
+    <div class="contact-box"><h4 style="margin:0 0 10px">${t().mail_title}</h4><div class="mailrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><a href="mailto:${esc(DATA.basic.email)}">${esc(DATA.basic.email)}</a></div><p class="note">${t().vcard_note}</p></div>
+    <div class="contact-box"><h4 style="margin:0 0 10px">${t().gb_title}</h4><form class="stack" id="gbForm"><input id="gbName" placeholder="${esc(t().name_ph)}" maxlength="40"><textarea id="gbMsg" rows="3" placeholder="${esc(t().msg_ph)}" maxlength="500" required></textarea><button class="btn primary" type="submit" style="align-self:flex-end">${t().send}</button><div class="note" id="gbMsgOut"></div></form></div>
+  </div>`);
+}
+
+function bindDynamic() {
+  const tlMore = $('#tlMore'); if (tlMore) tlMore.addEventListener('click', () => { tlExpanded = !tlExpanded; renderAll(); document.getElementById('timeline').scrollIntoView({ block: 'start' }); });
+  const askForm = $('#askForm');
+  if (askForm) {
+    document.querySelectorAll('.faq button').forEach(b => b.addEventListener('click', () => { const f = DATA.faq[Number(b.dataset.q)]; $('#askInput').value = f.q; showAnswer(f.a); }));
+    askForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); const q = $('#askInput').value.trim(); if (!q) return;
+      const hit = DATA.faq.find(f => f.q === q); if (hit) { showAnswer(hit.a); return; }   // FAQ와 같으면 API 호출 없이 바로
+      showAnswer(t().asking);
+      try { const r = await apiPost({ type: 'ask', pw: pw(), question: q }); showAnswer(r.ok ? r.answer : (r.error || 'error'), !r.ok); }
+      catch (err) { showAnswer(err.message, true); }
+    });
+  }
+  const gb = $('#gbForm');
+  if (gb) gb.addEventListener('submit', async (e) => {
+    e.preventDefault(); const out = $('#gbMsgOut'); out.textContent = '…';
+    try { const r = await apiPost({ type: 'guestbook', pw: pw(), name: $('#gbName').value.trim(), message: $('#gbMsg').value.trim() });
+      out.textContent = r.ok ? t().sent : (r.error || t().send_fail); if (r.ok) { $('#gbMsg').value = ''; $('#gbName').value = ''; } }
+    catch (err) { out.textContent = t().send_fail; }
+  });
+}
+function showAnswer(text, isErr) { const a = $('#answer'); a.hidden = false; a.textContent = text; a.classList.toggle('err', !!isErr); }
+
+/* ───── vCard ───── */
+$('#vcardBtn').addEventListener('click', () => {
+  const b = DATA.basic; if (!b) return;
+  const v = ['BEGIN:VCARD', 'VERSION:3.0', `N:${b.name_ko};;;;`, `FN:${b.name_ko} (${b.name_en})`, `ORG:${b.affiliation}`, `EMAIL;TYPE=INTERNET:${b.email}`, `URL:${location.origin}${location.pathname}`, `NOTE:${(b.taglines[0] || '')}`, 'END:VCARD'].join('\r\n');
+  const blob = new Blob([v], { type: 'text/vcard;charset=utf-8' }); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `${b.name_en.replace(/\s+/g, '_')}.vcf`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+/* ───── 언어 ───── */
+$('#langBtn').addEventListener('click', () => { lang = lang === 'ko' ? 'en' : 'ko'; localStorage.setItem('wc_lang', lang); applyLabels(); if (DATA) renderAll(); });
+
+/* ───── 시작 ───── */
+applyLabels();
+if (pw()) openApp();
+</script>
+</body>
+</html>
